@@ -1,6 +1,6 @@
 {
   "name": "supertest-akamai",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "superagent plugin to allow spoofing to Akamai Staging Network and use Pragma to get debug information",
   "main": "index.js",
   "scripts": {

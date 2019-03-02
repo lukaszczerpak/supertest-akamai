@@ -23,7 +23,7 @@ var akamaiRequest = function (host, usePragma) {
   };
 };
 
-module.exports = function (url, connectTo, usePragma = true) {
+module.exports = function (url, connectTo, usePragma = true, captureErrors = true) {
   let targetUrl = url;
   let originalHost;
 
@@ -37,13 +37,13 @@ module.exports = function (url, connectTo, usePragma = true) {
 
   let request = use(supertest(targetUrl))
     .use(captureError((error, test) => {
-      if (test.res) {
+      if (captureErrors && test.res) {
         error.message += ` at ${test.url}\n` +
                   `Response Status:\n${test.res.statusCode}\n` +
                   `Response Headers:\n${JSON.stringify(test.res.headers, null, 2)}\n` +
                   `Response Body:\n${test.res.text || '<empty>\n'}`;
-        error.stack = ''; // this is useless anyway
       }
+      error.stack = ''; // this is useless anyway
     })
     );
 
