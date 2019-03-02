@@ -35,11 +35,13 @@ module.exports = function (url, connectTo) {
 
   let request = use(supertest(targetUrl))
     .use(captureError((error, test) => {
-      error.message += ` at ${test.url}\n` +
-                    `Response Status:\n${test.res.statusCode}\n` +
-                    `Response Headers:\n${JSON.stringify(test.res.headers, null, 2)}\n` +
-                    `Response Body:\n${test.res.text || '<empty>\n'}`;
-      error.stack = ''; // this is useless anyway
+      if (test.res) {
+        error.message += ` at ${test.url}\n` +
+                `Response Status:\n${test.res.statusCode}\n` +
+                `Response Headers:\n${JSON.stringify(test.res.headers, null, 2)}\n` +
+                `Response Body:\n${test.res.text || '<empty>\n'}`;
+        error.stack = ''; // this is useless anyway
+      }
     })
     );
 
