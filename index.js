@@ -13,15 +13,17 @@ const PRAGMA = [
   'akamai-x-get-request-id'
 ].join(',');
 
-var akamaiRequest = function (host) {
+var akamaiRequest = function (host, usePragma) {
   return function akamaiRequest (req) {
     req.header.host = host;
-    req.header.pragma = PRAGMA;
+    if (usePragma) {
+      req.header.pragma = PRAGMA;
+    }
     return req;
   };
 };
 
-module.exports = function (url, connectTo) {
+module.exports = function (url, connectTo, usePragma = true) {
   let targetUrl = url;
   let originalHost;
 
@@ -37,16 +39,16 @@ module.exports = function (url, connectTo) {
     .use(captureError((error, test) => {
       if (test.res) {
         error.message += ` at ${test.url}\n` +
-                `Response Status:\n${test.res.statusCode}\n` +
-                `Response Headers:\n${JSON.stringify(test.res.headers, null, 2)}\n` +
-                `Response Body:\n${test.res.text || '<empty>\n'}`;
+                  `Response Status:\n${test.res.statusCode}\n` +
+                  `Response Headers:\n${JSON.stringify(test.res.headers, null, 2)}\n` +
+                  `Response Body:\n${test.res.text || '<empty>\n'}`;
         error.stack = ''; // this is useless anyway
       }
     })
     );
 
   if (connectTo) {
-    request.use(akamaiRequest(originalHost));
+    request.use(akamaiRequest(originalHost, usePragma));
   }
 
   return request;
